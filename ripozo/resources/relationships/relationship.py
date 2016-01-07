@@ -172,7 +172,7 @@ class Relationship(object):
                 properties[prop] = val
         name_values = get_or_pop(parent_properties, self.name, pop=self.remove_properties)
         if name_values:
-            properties.update(name_values)
+            properties[self.name] =  name_values
         return properties
 
 
