@@ -105,7 +105,7 @@ class HalAdapter(AdapterBase):
         if embedded:
             return self._construct_resource(relationship)
         else:
-            return dict(href=relationship.url)
+            return dict(href=self.combine_base_url_with_resource_url(relationship.url))
 
     @classmethod
     def format_exception(cls, exc):
