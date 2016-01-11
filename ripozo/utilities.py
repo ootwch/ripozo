@@ -62,6 +62,8 @@ def join_url_parts(*parts):
     '/another' from turning into 'something//another' instead
     it will return 'something/another'.
 
+    It will not do anything if the part is an empty string ('')
+
     .. code-block:: python
 
         >>> join_url_parts('first', 'second', 'last')
@@ -79,6 +81,8 @@ def join_url_parts(*parts):
         if url is None:  # first case
             url = part
             continue
+        if part == '':
+            continue #No-Op, should not modify url either
         url = url.rstrip('/')
         part = part.lstrip('/')
         url = '{0}/{1}'.format(url, part)
@@ -176,5 +180,12 @@ def get_or_pop(dictionary, key, default=None, pop=False):
     :rtype: object
     """
     if pop:
-        return dictionary.pop(key, default)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>><<<<", flush=True)
+
+        print("{} - {} => dict: {}".format(key, default, dictionary))
+
+        rval =  dictionary.pop(key, default)
+        print("cccccccccccccccccccccccccccccc", flush=True)
+
+        return rval
     return dictionary.get(key, default)

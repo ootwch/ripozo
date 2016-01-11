@@ -126,13 +126,24 @@ class ResourceBase(object):
         self.route_extension = route_extension
 
         if include_relationships:
-            self.related_resources = self._generate_links(self.relationships, self.properties)
+            self.related_resources = self._generate_links(self.relationships, self.properties) # also pops the related props from properties
+
+            # Remove properties which are used for relations
+            relationsships_to_remove = [rel.name for rel in self.relationships if rel.remove_properties]
+
+            for rr in self.related_resources:
+                if rr.name in relationsships_to_remove:
+                    self.properties.pop(rr.name, None)
+
 
             meta_links = self.meta.get('links', {}).copy()
             self.linked_resources = self._generate_links(self.links, meta_links)
         else:
             self.related_resources = []
             self.linked_resources = []
+
+        print(self)
+        return None # Just best practice
 
     @staticmethod
     def _generate_links(relationship_list, links_properties):
@@ -148,10 +159,13 @@ class ResourceBase(object):
         links = []
         relationship_list = relationship_list or []
         for relationship in relationship_list:
+            print("TESTING: {}".format(relationship.name))
             res = relationship.construct_resource(links_properties)
-            if res is None:
+            if res is None: # TODO: PEP-20 'Errors should never pass silently'
+                print("TESTING: No relationsship built for {}".format(relationship.name))
                 continue
             links.append(_RelatedTuple(res, relationship.name, relationship.embedded))
+        print(links)
         return links
 
     @property
@@ -248,7 +262,7 @@ class ResourceBase(object):
         """
         pks = cls.pks or []
         parts = ['<{0}>'.format(pk) for pk in pks]
-        base_url = join_url_parts(cls.base_url_sans_pks, *parts).lstrip('/')
+        base_url = join_url_parts(cls.base_url_sans_pks, *parts).strip('/')
         return '/{0}'.format(base_url) if not cls.append_slash else '/{0}/'.format(base_url)
 
     @classproperty

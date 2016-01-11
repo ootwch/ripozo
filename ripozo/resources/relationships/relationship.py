@@ -86,7 +86,18 @@ class Relationship(object):
         :rtype: type
         :raises: KeyError
         """
-        return self._resource_meta_class.registered_names_map[self._relation]
+
+        try:
+            rval = self._resource_meta_class.registered_names_map[self._relation]
+        except KeyError:
+
+            error_message = "Relation {rel} could not be constructed: Related resource <{res}> is not registered".format(
+                rel=self.name, res=self._relation)
+            _logger.error(error_message)
+            _logger.error("Available resources are: {}".format(str(self._resource_meta_class.registered_names_map.keys())))
+            raise KeyError(error_message)
+
+        return rval
 
     def construct_resource(self, properties):
         """
@@ -99,8 +110,8 @@ class Relationship(object):
             to this related resource
         :rtype: rest.viewsets.resource_base.ResourceBase
         """
-        _logger.debug('Constructing resource %s of type %s', self.name, self.relation)
-        related_properties = self._map_pks(properties)
+        _logger.debug('Constructing resource relation "%s" of type %s', self.name, self.relation)
+        related_properties = self._map_pks(properties) # This modifies the properties!
         resource = None
         if related_properties or self.templated:
             include_relationships = self.embedded and not self.templated
@@ -145,7 +156,7 @@ class Relationship(object):
         properties.pop(self.name, None)
         return properties
 
-    def _map_pks(self, parent_properties):
+    def _map_pks(self, parent_properties_orig):
         """
         Takes a dictionary of the values of the parent
         resources properties.  It then maps those properties
@@ -166,13 +177,23 @@ class Relationship(object):
         :raises: KeyError
         """
         properties = {}
+        parent_properties = parent_properties_orig.copy() # or copy?
+        parprop = parent_properties.copy()
         for parent_prop, prop in six.iteritems(self.property_map):
             val = get_or_pop(parent_properties, parent_prop, pop=self.remove_properties)
             if val is not None:
+                _logger.info("Value found for key <{0}> sent to related object <{1}> - <{2}> is available in {3}".format(prop, self._relation, parent_prop, parprop))
                 properties[prop] = val
+            else:
+                _logger.warn("No value found for key <{0}> sent to related object <{1}> - <{2}> is not available in {3}".format(prop, self._relation, parent_prop, parprop))
         name_values = get_or_pop(parent_properties, self.name, pop=self.remove_properties)
         if name_values:
-            properties[self.name] =  name_values
+
+            try:
+                properties.update(name_values)
+            except ValueError:
+                properties[self.name] = name_values
+
         return properties
 
 
