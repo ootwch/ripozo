@@ -238,20 +238,28 @@ class DispatcherBase(object):
         """
         Checks that all relationships are valid in that
         their relation string is a real class.
-        Raises a warngin if the relation is not
+        Raises a KeyError if the relation is not
         valid.
 
         :param type klass: The klass to check
+        :raises KeyError
         """
         for rel in klass.relationships:
             if rel._relation not in ResourceMetaClass.registered_names_map:
-                warnings.warn('The relation property {0} on the '
-                              'relationship {1} for the class '
-                              '{2} has not been registered.'
-                              ''.format(rel._relation, rel.name, klass.__name__))
+
+                error_message = ('The relation property {0} on the '
+                                 'relationship {1} for the class '
+                                 '{2} has not been registered.'
+                                 ''.format(rel._relation, rel.name, klass.__name__))
+                _logger.error(error_message)
+                _logger.error("Available resources are: {}".format(str(ResourceMetaClass.registered_names_map.keys())))
+                raise KeyError(error_message)
         for rel in klass.links:
             if rel._relation not in ResourceMetaClass.registered_names_map:
-                warnings.warn('The relation property {0} on the '
-                              'link {1} for the class '
-                              '{2} has not been registered.'
-                              ''.format(rel._relation, rel.name, klass.__name__))
+                error_message = ('The relation property {0} on the '
+                                 'link {1} for the class '
+                                 '{2} has not been registered.'
+                                 ''.format(rel._relation, rel.name, klass.__name__))
+                _logger.error(error_message)
+                _logger.error("Available resources are: {}".format(str(ResourceMetaClass.registered_names_map.keys())))
+                raise KeyError(error_message)
