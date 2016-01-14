@@ -268,7 +268,7 @@ class ResourceBase(object):
     @classproperty
     def base_url_sans_pks(cls):
         """
-        A class property that eturns the base url
+        A class property that returns the base url
         without the pks.
         This is just the /{namespace}/{resource_name}
 

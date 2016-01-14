@@ -155,7 +155,8 @@ class RetrieveList(ResourceBase):
     """
     __abstract__ = True
 
-    @apimethod(methods=['GET'], no_pks=True)
+    @apimethod(methods=['GET'])
+    # @apimethod(methods=['GET'], no_pks=True)
     @manager_translate(fields_attr='list_fields')
     def retrieve_list(cls, request):
         """

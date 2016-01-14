@@ -180,12 +180,8 @@ def get_or_pop(dictionary, key, default=None, pop=False):
     :rtype: object
     """
     if pop:
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>><<<<", flush=True)
-
         print("{} - {} => dict: {}".format(key, default, dictionary))
-
-        rval =  dictionary.pop(key, default)
-        print("cccccccccccccccccccccccccccccc", flush=True)
-
+        rval = dictionary.pop(key, default)
         return rval
+
     return dictionary.get(key, default)
