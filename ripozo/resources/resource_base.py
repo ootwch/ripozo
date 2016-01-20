@@ -143,7 +143,6 @@ class ResourceBase(object):
             self.linked_resources = []
 
         print(self)
-        return None # Just best practice
 
     @staticmethod
     def _generate_links(relationship_list, links_properties):
@@ -159,10 +158,10 @@ class ResourceBase(object):
         links = []
         relationship_list = relationship_list or []
         for relationship in relationship_list:
-            print("TESTING: {}".format(relationship.name))
+            _logger.debug("Trying to build relationship for: {}".format(relationship.name))
             res = relationship.construct_resource(links_properties)
             if res is None: # TODO: PEP-20 'Errors should never pass silently'
-                print("TESTING: No relationsship built for {}".format(relationship.name))
+                _logger.warn("No relationsship built for {}".format(relationship.name))
                 continue
             links.append(_RelatedTuple(res, relationship.name, relationship.embedded))
         print(links)
@@ -351,7 +350,7 @@ def _generate_endpoint_dict(cls):
         _logger.debug('Found the apimethod %s on the class %s', name, cls.__name__)
         all_routes = []
         for route, endpoint, options in method.routes:
-            base_url = cls.base_url_sans_pks if options.get('no_pks', False) else cls.base_url
+            base_url = cls.base_url_sans_pks if options.get('no_pks', False) else cls.base_url #TODO: Add trailing slash here if no_pks??
             route = join_url_parts(base_url, route)
             all_routes.append(dict(route=route, endpoint_func=method, **options))
         _logger.info('Registering routes: %s as key %s', all_routes, name)

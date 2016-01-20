@@ -153,7 +153,6 @@ class apimethod(object):
             dependent on the individual dispatcher and web framework that
             you are using.
         """
-        _logger.info('Initializing apimethod route: %s with options %s', route, options)
         self.route = route
         if not methods:
             methods = ['GET']
@@ -161,6 +160,8 @@ class apimethod(object):
         self.options['methods'] = methods
         self.options['no_pks'] = no_pks
         self.endpoint = endpoint
+        _logger.info('Initializing apimethod route: %s with options %s', route, self.options)
+
 
     def __call__(self, func):
         """

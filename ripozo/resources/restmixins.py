@@ -96,9 +96,38 @@ class Create(ResourceBase):
         :rtype: Update
         """
         _logger.debug('Creating a resource using manager %s', cls.manager)
-        props = cls.manager.create(request.body_args)
+
+
+        args = request.url_params.copy()
+        args.update(request.query_args)
+        args.update(request.body_args)
+
+        props = cls.manager.create(args)
         meta = dict(links=dict(created=props))
         return cls(properties=props, meta=meta, status_code=201)
+
+
+    # @apimethod(methods=['POST'], no_pks=False)
+    # @manager_translate(validate=True, fields_attr='create_fields')
+    # def create(cls, request):
+    #     """
+    #     Creates a new resource using the cls.manager.create
+    #     method.  Returns the resource that was just created
+    #     as an instance of the class that created it.
+    #
+    #     :param RequestContainer request: The request in the standardized
+    #         ripozo style.
+    #     :return: An instance of the class
+    #         that was called.
+    #     :rtype: Update
+    #     """
+    #     _logger.debug('Creating a resource using manager %s', cls.manager)
+    #     props = cls.manager.create(request.body_args)
+    #     meta = dict(links=dict(created=props))
+    #     return cls(properties=props, meta=meta, status_code=201)
+
+
+
 
     @classproperty
     def links(cls):

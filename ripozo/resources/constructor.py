@@ -65,4 +65,4 @@ class ResourceMetaClass(type):
                           'Overwriting that class'.format(klass.__name__), UserWarning)
         mcs.registered_names_map[klass.__name__] = klass
         resource_name = getattr(klass, 'resource_name', klass.__name__)
-        mcs.registered_resource_names_map[resource_name] = klass
+        mcs.registered_resource_names_map[resource_name] = klass #TODO: I think this overwrites earlier resources - id by name without pk may not be adqeuate

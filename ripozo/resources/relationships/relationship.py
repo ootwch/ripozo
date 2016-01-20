@@ -179,6 +179,8 @@ class Relationship(object):
         properties = {}
         parent_properties = parent_properties_orig.copy() # or copy?
         parprop = parent_properties.copy()
+
+        # Use the mapper to translate the properties
         for parent_prop, prop in six.iteritems(self.property_map):
             val = get_or_pop(parent_properties, parent_prop, pop=self.remove_properties)
             if val is not None:
@@ -186,13 +188,21 @@ class Relationship(object):
                 properties[prop] = val
             else:
                 _logger.warn("No value found for key <{0}> sent to related object <{1}> - <{2}> is not available in {3}".format(prop, self._relation, parent_prop, parprop))
+
+        # Also copy the properties where the name is equal to the resource name
+        # TODO: Why? What is this for?
         name_values = get_or_pop(parent_properties, self.name, pop=self.remove_properties)
         if name_values:
-
             try:
                 properties.update(name_values)
             except ValueError:
                 properties[self.name] = name_values
+
+        # Also copy remaining, non-translated properties. TODO: There is no reason not to, right?
+        for prop_name, prop in six.iteritems(parent_properties):
+            properties[prop_name] = prop
+
+
 
         return properties
 

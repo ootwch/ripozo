@@ -129,16 +129,16 @@ class TestDispatchBase(unittest2.TestCase):
 
     def test_check_relationships(self):
         """
-        Tests that warnings are raised when
+        Tests that KeyErrors are raised when
         related names are not in the ResourceMetaClass
         """
         disp = FakeDispatcher()
         rel = mock.MagicMock(relation='blah')
         klass = mock.MagicMock(relationships=[rel], links=[], __name__='blah')
-        self.assertRaises(Warning, disp._check_relationships(klass))
+        self.assertRaises(KeyError, disp._check_relationships, klass)
         disp = FakeDispatcher()
         klass = mock.MagicMock(relationships=[], links=[rel], __name__='blah')
-        self.assertRaises(Warning, disp._check_relationships(klass))
+        self.assertRaises(KeyError, disp._check_relationships, klass)
 
     def test_auto_options(self):
         """

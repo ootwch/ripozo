@@ -31,10 +31,16 @@ class ListRelationship(Relationship):
         :return: A generator that yields the relationships.
         :rtype: types.GeneratorType
         """
-        objects = get_or_pop(properties, self.name, [], pop=self.remove_properties)
+
+        resource_name = self.relation.resource_name
+        objects = get_or_pop(properties, resource_name, [], pop=self.remove_properties)
         resources = []
         for obj in objects:
-            res = self.relation(properties=obj, query_args=self.query_args,
-                                include_relationships=self.embedded)
+            res = super().construct_resource(obj)
+            # res = self.relation(properties=obj, query_args=self.query_args,
+            #                     include_relationships=self.embedded)
             resources.append(res)
+
+        if not resources:
+            return None
         return resources

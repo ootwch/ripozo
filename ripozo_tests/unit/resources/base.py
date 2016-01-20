@@ -108,6 +108,7 @@ class TestResourceBase(unittest2.TestCase):
         class DoubleMiddleSlash(ResourceBase):
             namespace = 'api/'
             resource_name = '//another_resource/'
+            append_slash = True
 
         self.assertEqual('/api/another_resource/', DoubleMiddleSlash.base_url)
 
@@ -153,6 +154,8 @@ class TestResourceBase(unittest2.TestCase):
         """
 
         class T1(ResourceBase):
+            append_slash = True
+
             @apimethod(methods=['GET'])
             def hello(cls, *args, **kwargs):
                 return cls(properties=dict(hello='world'))
@@ -182,6 +185,8 @@ class TestResourceBase(unittest2.TestCase):
         """
         props = dict(hello='world')
         class T1(ResourceBase):
+            append_slash = True
+
             @apimethod(methods=['GET'])
             def hello(cls, *args, **kwargs):
                 return cls(properties=dict(hello='world'))
@@ -192,12 +197,15 @@ class TestResourceBase(unittest2.TestCase):
         self.assertDictEqual(props, T1.hello(mock.MagicMock()).properties)
 
         class T2(T1):
+            append_slash = True
             pass
 
         class T3(T1):
+            append_slash = True
             pass
 
         class T4(T2):
+            append_slash = True
             pass
 
         endpoint = T1.endpoint_dictionary()['hello'][0]
